@@ -1,0 +1,5 @@
+Jedi-Plugin-Template-*
+.build
+*.swp
+*.bak
+*.tdy
