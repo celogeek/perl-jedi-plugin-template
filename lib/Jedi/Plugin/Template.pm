@@ -22,6 +22,7 @@ To use it in your Jedi app :
 
 use Moo::Role;
 # VERSION
+use Template;
 use Path::Class;
 use feature 'state';
 use MIME::Types qw/by_suffix/;
@@ -53,6 +54,35 @@ sub _jedi_dispatch_public_files {
 	$response->body($content);
 
 	return;
+}
+
+has '_template_views' => (is => 'lazy');
+sub _build__template_views {
+	my ($jedi) = @_;
+	return dir($jedi->jedi_app_root, 'views');
+}
+
+has 'template_default_layout' => (is => 'rw');
+
+sub template {
+	my ($jedi, $file, $vars, $layout) = @_;
+	$layout //= $jedi->template_default_layout;
+	
+	my @tpl_options = (
+		INCLUDE_PATH => [ $jedi->_template_views ]
+	);
+
+	if (defined $layout && $layout ne 'none') {
+		push @tpl_options, WRAPPER => file($jedi->_template_views, 'layouts', $layout);
+	}
+
+	my $tpl_engine = Template->new(@tpl_options);
+	my $view_file = file($jedi->_template_views, $file);
+
+	my $ret = '';
+	$tpl_engine->process($view_file, $vars, \$ret) or croak $tpl_engine->errors();
+
+	return $ret;
 }
 
 1;
