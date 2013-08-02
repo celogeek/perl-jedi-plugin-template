@@ -30,6 +30,7 @@ use Path::Class;
 use feature 'state';
 use MIME::Types qw/by_suffix/;
 use Carp qw/croak/;
+use IO::Compress::Gzip qw(gzip);
 
 # This part is for handle the public subdir
 # It catch all files from path info and send it if the file exists
@@ -52,9 +53,17 @@ sub _jedi_dispatch_public_files {
 	my ($mime_type, $encoding) = by_suffix($file);
 	my $type = $mime_type . '; charset=' . $encoding;
 	my $content = $file->slurp();
+	my $accept_encoding = $request->env->{HTTP_ACCEPT_ENCODING} // '';
+	if ($accept_encoding =~ /gzip/) {
+		$type = $mime_type;
+		my $content_unpack = $content;
+		gzip \$content_unpack => \$content;
+		$response->set_header('Content-Encoding', 'gzip');
+	}
 
 	$response->status(200);
 	$response->set_header('Content-Type', $type);
+	$response->set_header('Content-Length' => length($content));
 	$response->body($content);
 
 	return;
