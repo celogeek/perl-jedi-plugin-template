@@ -1,2 +1,5 @@
+0.02  2013-08-02 10:58:47 GMT
+    * Feature #284 : Plugin Template : activate cache and gzip for public file on deman (Celogeek San)
+
 0.01  2013-08-02 09:37:16 GMT
     * Feature #273 : create template attribute into jedi app (Celogeek San)
