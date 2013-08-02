@@ -24,6 +24,12 @@ test_psgi $jedi->start, sub {
 		is $res->code, 200, 'index ok';
 		is $res->content, 'AROUND:OK:DNUORA', '... content also';
 	}
+	{
+		my $res = $cb->(GET '/error');
+		is $res->code, 500, 'error to get the template';
+		like $res->content, qr{file\serror.*error.tt:\snot\sfound}x, '... content also';
+	}
+
 };
 
 done_testing;
