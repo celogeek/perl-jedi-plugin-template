@@ -29,6 +29,7 @@ use Template;
 use Path::Class;
 use feature 'state';
 use MIME::Types qw/by_suffix/;
+use Carp qw/croak/;
 
 # This part is for handle the public subdir
 # It catch all files from path info and send it if the file exists
@@ -90,27 +91,38 @@ the same directory than the "config.*".
 =cut
 sub jedi_template {
 	my ($jedi, $file, $vars, $layout) = @_;
-	$layout //= $jedi->template_default_layout;
+	$layout //= $jedi->jedi_template_default_layout;
 	$layout = 'none' if !defined $layout;
+
+	my $layout_file;
+	if ($layout ne 'none') {
+		$layout_file = file($jedi->_jedi_template_views, 'layouts', $layout);
+		if (! -f $layout_file) {
+			$layout = 'none';
+			$layout_file = undef;
+		}
+	};
+
 
 	state $cache = {};
 	if (!exists $cache->{$layout}) {
 		my @tpl_options = (
-			INCLUDE_PATH => [ $jedi->_template_views ]
+			INCLUDE_PATH => [ $jedi->_jedi_template_views ],
+			ABSOLUTE => 1,
 		);
 	
 		if ($layout ne 'none') {
-			push @tpl_options, WRAPPER => file($jedi->_template_views, 'layouts', $layout);
+			push @tpl_options, WRAPPER => $layout_file->stringify;
 		}
 
 		$cache->{$layout} = Template->new(@tpl_options);
 	}
 	
 	my $tpl_engine = $cache->{$layout};
-	my $view_file = file($jedi->_template_views, $file);
+	my $view_file = file($jedi->_jedi_template_views, $file);
 
-	my $ret = '';
-	$tpl_engine->process($view_file, $vars, \$ret) or croak $tpl_engine->errors();
+	my $ret = "";
+	$tpl_engine->process($view_file->stringify, $vars, \$ret) or croak $tpl_engine->error();
 
 	return $ret;
 }
