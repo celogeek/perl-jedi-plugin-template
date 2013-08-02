@@ -6,15 +6,18 @@ package Jedi::Plugin::Template;
 
 This will add missing route to catch public file if exists.
 
-This will also give a "template" keep to display your template.
+This will also give a "jedi_template" method to display your template.
 
 To use it in your Jedi app :
 
 	package MyApps;
 	use Jedi::App;
-	use Jedi::Plugin::Template;
+	with 'Jedi::Plugin::Template';
 
-	sub jedi_app { ... }
+	sub jedi_app {
+		...
+		$response->body($jedi->jedi_template('test.tt'));
+	}
 
 	1;
 
@@ -56,27 +59,54 @@ sub _jedi_dispatch_public_files {
 	return;
 }
 
-has '_template_views' => (is => 'lazy');
-sub _build__template_views {
+has '_jedi_template_views' => (is => 'lazy');
+sub _build__jedi_template_views {
 	my ($jedi) = @_;
 	return dir($jedi->jedi_app_root, 'views');
 }
 
-has 'template_default_layout' => (is => 'rw');
+=attr jedi_template_default_layout
 
-sub template {
+if you want to set a default layout, use this attribute.
+
+	$jedi->jedi_template_default_layout('main.tt');
+
+=cut
+has 'jedi_template_default_layout' => (is => 'rw');
+
+=method jedi_template
+
+This method will use L<Template> to process your template.
+
+	$jedi->jedi_template($file, $vars);
+	$jedi->jedi_template($file, $vars, $layout);
+
+The layout use the jedi_template_default_layout by default.
+You can also remove any layout, using the value "none".
+
+The file is a file inside the subdir "views". The subdir "views" is located on the root of your apps, in
+the same directory than the "config.*".
+
+=cut
+sub jedi_template {
 	my ($jedi, $file, $vars, $layout) = @_;
 	$layout //= $jedi->template_default_layout;
+	$layout = 'none' if !defined $layout;
+
+	state $cache = {};
+	if (!exists $cache->{$layout}) {
+		my @tpl_options = (
+			INCLUDE_PATH => [ $jedi->_template_views ]
+		);
 	
-	my @tpl_options = (
-		INCLUDE_PATH => [ $jedi->_template_views ]
-	);
+		if ($layout ne 'none') {
+			push @tpl_options, WRAPPER => file($jedi->_template_views, 'layouts', $layout);
+		}
 
-	if (defined $layout && $layout ne 'none') {
-		push @tpl_options, WRAPPER => file($jedi->_template_views, 'layouts', $layout);
+		$cache->{$layout} = Template->new(@tpl_options);
 	}
-
-	my $tpl_engine = Template->new(@tpl_options);
+	
+	my $tpl_engine = $cache->{$layout};
 	my $view_file = file($jedi->_template_views, $file);
 
 	my $ret = '';

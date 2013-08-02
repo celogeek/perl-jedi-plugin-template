@@ -12,4 +12,4 @@ equivalent_modules = Moo::Role
 equivalent_modules = Moo::Role
 
 [Subroutines::ProhibitUnusedPrivateSubroutines]
-allow = _jedi_dispatch_public_files
+allow = _jedi_dispatch_public_files _build__jedi_template_views
