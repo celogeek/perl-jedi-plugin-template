@@ -1,6 +1,6 @@
 package t::TestApp::App;
 use Jedi::App;
-with 'Jedi::Plugin::Template';
+use Jedi::Plugin::Template;
 
 sub jedi_app {
 	my ($jedi) = @_;
