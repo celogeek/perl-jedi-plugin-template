@@ -1,3 +1,6 @@
+0.04  2013-08-22 18:22:06 GMT
+    * Bug #302 : Fix pod for Jedi::Plugin::Template (Celogeek San)
+
 0.03  2013-08-03 16:39:40 GMT
     * Feature #288 : Improve usage of the plugin template using endofscope (Celogeek San)
 
