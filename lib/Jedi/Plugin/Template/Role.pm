@@ -36,7 +36,10 @@ sub _jedi_template_setup_path {
       _jedi_template_check_path($jedi_app->jedi_config->{$class}{template_dir})
       //
       # local share dir
-      _jedi_template_check_path('share')
+      _jedi_template_check_path(dir(file($0)->dir, 'share'))
+      //
+      # parent share dir (launch from bin)
+      _jedi_template_check_path(dir(file($0)->dir->parent, 'share'))
       //
       # dist_dir
       _jedi_template_check_path(eval{dist_dir($dist)})
