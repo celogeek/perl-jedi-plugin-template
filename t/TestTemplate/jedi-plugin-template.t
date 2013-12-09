@@ -3,8 +3,13 @@ use Test::Most 'die';
 use HTTP::Request::Common;
 use Plack::Test;
 use Jedi;
+use Path::Class;
 
-my $jedi = Jedi->new();
+my $jedi = Jedi->new(config => {
+  't::TestTemplate::App' => {
+    template_dir => dir('t','TestTemplate'),
+  }
+});
 $jedi->road('/', 't::TestTemplate::App');
 
 test_psgi $jedi->start, sub {

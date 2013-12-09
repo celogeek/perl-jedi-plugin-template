@@ -4,8 +4,13 @@ use HTTP::Request::Common;
 use Plack::Test;
 use Jedi;
 use IO::Uncompress::Gunzip qw/gunzip/;
+use Path::Class;
 
-my $jedi = Jedi->new();
+my $jedi = Jedi->new(config => {
+  't::TestApp::App' => {
+    template_dir => dir('t','TestApp'),
+  }
+});
 $jedi->road('/', 't::TestApp::App');
 
 test_psgi $jedi->start, sub {
