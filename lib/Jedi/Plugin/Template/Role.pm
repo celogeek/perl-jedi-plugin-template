@@ -23,7 +23,7 @@ sub _jedi_template_check_path {
 
   return if (! -d dir($path, 'views')) || (! -d dir($path, 'public'));
 
-  return dir($path);
+  return dir($path)->absolute;
 }
 
 sub _jedi_template_setup_path {

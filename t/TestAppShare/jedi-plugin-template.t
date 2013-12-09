@@ -7,7 +7,10 @@ use IO::Uncompress::Gunzip qw/gunzip/;
 use Path::Class;
 
 my $jedi = Jedi->new();
-$jedi->road('/', 't::TestApp::App');
+$jedi->road('/', 't::TestAppShare::App');
+
+is $jedi->config->{'t::TestAppShare::App'}{'template_dir'}, dir(file($0)->dir,'share')->absolute, 'config ok';
+
 
 test_psgi $jedi->start, sub {
 	my $cb = shift;

@@ -1,4 +1,4 @@
-package t::TestAppShare::App;
+package t::TestAppDistDir::App;
 use Jedi::App;
 use Jedi::Plugin::Template;
 
