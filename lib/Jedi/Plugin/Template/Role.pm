@@ -19,7 +19,8 @@ sub _jedi_template_check_path {
   my ($path) = @_;
 
   return if !defined $path;
-  return if ! -d dir($path, 'views') && ! -d dir($path, 'public');
+
+  return if (! -d dir($path, 'views')) || (! -d dir($path, 'public'));
 
   return dir($path);
 }
