@@ -14,6 +14,7 @@ use Carp;
 use IO::Compress::Gzip qw(gzip);
 use HTTP::Date qw/time2str/;
 use Digest::SHA qw/sha1_base64/;
+use File::ShareDir ':ALL';
 
 sub _jedi_template_check_path {
   my ($path) = @_;
