@@ -5,15 +5,16 @@ use Plack::Test;
 use Jedi;
 use IO::Uncompress::Gunzip qw/gunzip/;
 use Path::Class;
+use Test::File::ShareDir
+  '-root' => dir(file($0)->dir, 'dist')->stringify,
+  '-share' => { '-dist' => { 't-TestAppDistDir-App' => 'share' } };
+use File::ShareDir ':ALL';
 
-my $jedi = Jedi->new(config => {
-  't::TestApp::App' => {
-    template_dir => dir('t','TestApp'),
-  }
-});
-$jedi->road('/', 't::TestApp::App');
+my $jedi = Jedi->new();
+$jedi->road('/', 't::TestAppDistDir::App');
 
-is $jedi->config->{'t::TestApp::App'}{'template_dir'}, dir('t', 'TestApp')->absolute, 'config ok';
+is $jedi->config->{'t::TestAppDistDir::App'}{'template_dir'}, dir(dist_dir('t-TestAppDistDir-App'))->absolute, 'config ok';
+
 
 test_psgi $jedi->start, sub {
 	my $cb = shift;
