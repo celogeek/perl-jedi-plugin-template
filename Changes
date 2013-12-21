@@ -1,3 +1,5 @@
+    * Feature #358 : Use the share app config inside the template plugin (Celogeek San)
+
 0.04  2013-08-22 18:22:06 GMT
     * Bug #302 : Fix pod for Jedi::Plugin::Template (Celogeek San)
 
