@@ -1,6 +1,12 @@
 package Jedi::Plugin::Template::Role;
 
-# ABSTRACT: Jedi Plugin for Template Toolkit (Role)
+# ABSTRACT: Role imported by Jedi::Plugin::Template
+
+=head1 DESCRIPTION
+
+Check L<Jedi::Plugin::Template> for documentation
+
+=cut
 
 use strict;
 use warnings;
@@ -82,6 +88,8 @@ sub _jedi_dispatch_public_files {
 
 use Moo::Role;
 
+has 'jedi_template_default_layout' => (is => 'rw');
+
 before 'jedi_app' => sub {
 	my ($jedi_app) = @_;
 
@@ -92,30 +100,6 @@ before 'jedi_app' => sub {
 	return;
 };
 
-
-=attr jedi_template_default_layout
-
-if you want to set a default layout, use this attribute.
-
-	$jedi_app->jedi_template_default_layout('main.tt');
-
-=cut
-has 'jedi_template_default_layout' => (is => 'rw');
-
-=method jedi_template
-
-This method will use L<Template> to process your template.
-
-	$jedi_app->jedi_template($file, $vars);
-	$jedi_app->jedi_template($file, $vars, $layout);
-
-The layout use the jedi_template_default_layout by default.
-You can also remove any layout, using the value "none".
-
-The file is a file inside the subdir "views". The subdir "views" is located on the root of your apps, in
-the same directory than the "config.*".
-
-=cut
 sub jedi_template {
 	my ($jedi_app, $file, $vars, $layout) = @_;
 	$layout //= $jedi_app->jedi_template_default_layout;
