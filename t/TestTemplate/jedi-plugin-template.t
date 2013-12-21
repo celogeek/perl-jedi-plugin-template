@@ -3,9 +3,15 @@ use Test::Most 'die';
 use HTTP::Request::Common;
 use Plack::Test;
 use Jedi;
+use Path::Class;
 
-my $jedi = Jedi->new();
+my $jedi = Jedi->new(config => {
+  't::TestTemplate::App' => {
+    template_dir => dir('t','TestTemplate'),
+  }
+});
 $jedi->road('/', 't::TestTemplate::App');
+is $jedi->config->{'t::TestTemplate::App'}{'template_dir'}, file($0)->dir->absolute, 'config ok';
 
 test_psgi $jedi->start, sub {
 	my $cb = shift;
